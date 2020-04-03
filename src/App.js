@@ -1,5 +1,11 @@
 import React, { useState } from "react"
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom"
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  useParams
+} from "react-router-dom"
 const Menu = () => {
   const padding = {
     paddingRight: 5
@@ -24,12 +30,28 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map(anecdote => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
       ))}
     </ul>
+    <br />
+    <br />
   </div>
 )
-
+const Anecdote = ({ anecdotes }) => {
+  const id = useParams().id
+  const anecdote = anecdotes.find(anecdt => anecdt.id === id)
+  return (
+    <div>
+      <h2>{anecdote.content}</h2>
+      <p>Has {anecdote.votes} votes</p>
+      <p>
+        For more info, see <a href={anecdote.info}>{anecdote.info}</a>
+      </p>
+    </div>
+  )
+}
 const About = () => (
   <div>
     <h2>About anecdote app</h2>
@@ -110,6 +132,8 @@ const CreateNew = props => {
           />
         </div>
         <button>create</button>
+        <br />
+        <br />
       </form>
     </div>
   )
@@ -158,16 +182,20 @@ const App = () => {
       <h1>Software anecdotes</h1>
       <Menu />
       <Switch>
+        <Route path="/anecdotes/:id">
+          <Anecdote anecdotes={anecdotes} />
+        </Route>
         <Route path="/about">
           <About />
         </Route>
         <Route path="/create">
           <CreateNew addNew={addNew} />
         </Route>
+
+        <Route path="/">
+          <AnecdoteList anecdotes={anecdotes} />
+        </Route>
       </Switch>
-      <Route path="/">
-        <AnecdoteList anecdotes={anecdotes} />
-      </Route>
       <Footer />
     </Router>
   )
