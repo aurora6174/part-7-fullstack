@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useField } from "../src/hooks/index"
 import {
   BrowserRouter as Router,
   Link,
@@ -90,9 +91,12 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState("")
-  const [author, setAuthor] = useState("")
-  const [info, setInfo] = useState("")
+  const contentField = useField("content")
+  const authorField = useField("author")
+  const infoField = useField("info")
+  const content = contentField.value
+  const author = authorField.value
+  const info = infoField.value
   const history = useHistory()
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -111,27 +115,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...contentField} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...authorField} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...infoField} />
         </div>
         <button>create</button>
       </form>
@@ -160,6 +152,7 @@ const App = () => {
   const [notification, setNotification] = useState("")
 
   const addNew = (anecdote) => {
+    console.log(anecdote)
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
     setNotification(`A new anecdote "${anecdote.content}" added!`)
