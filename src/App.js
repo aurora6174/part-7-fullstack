@@ -8,6 +8,7 @@ import {
   useParams,
   useHistory,
 } from "react-router-dom"
+
 const Menu = () => {
   const padding = {
     paddingRight: 5,
@@ -89,14 +90,16 @@ const Footer = () => (
     for the source code.
   </div>
 )
-
 const CreateNew = (props) => {
   const contentField = useField("content")
   const authorField = useField("author")
   const infoField = useField("info")
-  const content = contentField.value
-  const author = authorField.value
-  const info = infoField.value
+  let content = contentField.value
+  let author = authorField.value
+  let info = infoField.value
+  let contentRef = contentField.ref
+  let authorRef = authorField.ref
+  let infoRef = infoField.ref
   const history = useHistory()
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -108,7 +111,11 @@ const CreateNew = (props) => {
     })
     history.push("/")
   }
-
+  const clearForm = () => {
+    contentRef.current.defaultValue = ""
+    authorRef.current.defaultValue = ""
+    infoRef.current.defaultValue = ""
+  }
   return (
     <div>
       <h2>create a new anecdote</h2>
@@ -125,7 +132,12 @@ const CreateNew = (props) => {
           url for more info
           <input {...infoField} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <br />
+        <br />
+        <button type="reset" onClick={clearForm}>
+          Reset
+        </button>
       </form>
     </div>
   )
