@@ -1,0 +1,45 @@
+{
+  "notes": [
+    {
+      "content": "custom-hookit aivan mahtavia",
+      "id": 1
+    },
+    {
+      "content": "paras feature ikinä <3",
+      "id": 2
+    },
+    {
+      "content": "note created",
+      "id": 3
+    },
+    {
+      "content": "another note",
+      "id": 4
+    },
+    {
+      "content": "test creation",
+      "id": 5
+    },
+    {
+      "content": "what is recursion",
+      "id": 6
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "Jack",
+      "number": "5776-9874",
+      "id": 2
+    },
+    {
+      "name": "nathan",
+      "number": "6784009-34444",
+      "id": 3
+    }
+  ]
+}
