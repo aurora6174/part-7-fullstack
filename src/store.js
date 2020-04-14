@@ -3,12 +3,14 @@ import thunk from "redux-thunk"
 import notReducer from "./reducers/notificationReducer"
 import blogReducer from "./reducers/blogReducer"
 import userReducer from "./reducers/userReducer"
+import allUsersReducer from "./reducers/allUsersReducer"
 import { composeWithDevTools } from "redux-devtools-extension"
 
 const reducer = combineReducers({
   notReducer,
   blogReducer,
   userReducer,
+  allUsersReducer,
 })
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)))
 store.subscribe(() => console.log(store.getState()))

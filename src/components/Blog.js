@@ -6,6 +6,7 @@ const Blog = ({ blog, updateLikes, deleteBlog, user }) => {
   const showComponent = { display: visible ? "" : "none" }
   const token = user.token
   const decoded = jwt.verify(token, "secretword")
+  console.log(decoded)
   const toggleVisiblity = () => setVisible(!visible)
   return (
     <React.Fragment>
