@@ -14,13 +14,15 @@ const create = async (newBlog) => {
   const response = await axios.post(baseUrl, newBlog, config)
   return response.data
 }
-const update = async (id, newObject) => {
-  const response = await axios.put(`${baseUrl}/${id}`, newObject)
+const update = async (blog) => {
+  const blogToUpdate = { ...blog, likes: blog.likes + 1 }
+  const blogUrl = `${baseUrl}/${blog.id}`
+  const response = await axios.put(blogUrl, blogToUpdate)
   return response.data
 }
-const deleteBlog = async (id) => {
+const deleteBlog = async (blog) => {
   const config = { headers: { Authorization: token } }
-  const response = await axios.delete(`${baseUrl}/${id}`, config)
+  const response = await axios.delete(`${baseUrl}/${blog.id}`, config)
   return response.data
 }
 

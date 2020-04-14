@@ -1,43 +1,46 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import Blog from "./components/Blog"
-import blogService from "./services/blog"
 import loginService from "./services/login"
 import Notification from "./components/Notification"
 import LoginForm from "./components/LoginForm"
 import BlogForm from "./components/BlogForm"
 import ToggleTool from "./components/ToggleTool"
+import {
+  initializeBlogs,
+  newBlog,
+  updateLikes,
+  removeABlog,
+} from "./reducers/blogReducer"
+import { loggedInUser, loggedOutUser } from "./reducers/userReducer"
 import { successMessage, errorMessage } from "./reducers/notificationReducer"
 import { useSelector, useDispatch } from "react-redux"
+
+//App Component
 const App = () => {
   const dispatch = useDispatch()
-  const message = useSelector((state) => state.message)
-  const isSuccess = useSelector((state) => state.isSuccess)
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
+  const message = useSelector((state) => state.notReducer.message)
+  const isSuccess = useSelector((state) => state.notReducer.isSuccess)
+  const blogsInState = useSelector((state) => state.blogReducer)
+  const userInState = useSelector((state) => state.userReducer)
+  console.log(userInState)
+
   //Get all blogs
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   //Get token from response and set in localStorage
   useEffect(() => {
-    const loggedInUser = window.localStorage.getItem("loggedInUser")
-    if (loggedInUser) {
-      const user = JSON.parse(loggedInUser)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    dispatch(loggedInUser())
+  }, [dispatch])
 
   //Create blog function
-  const addBlog = async (newBlogObject) => {
+  const addBlog = (newBlogObject) => {
     try {
-      const response = await blogService.create(newBlogObject)
-      console.log(response.user)
-      setBlogs(blogs.concat(response))
+      dispatch(newBlog(newBlogObject))
       dispatch(
         successMessage(
-          `A new blog ${response.title}! by ${response.author} added`,
+          `A new blog "${newBlogObject.title}" by ${newBlogObject.author} added!`,
           5000
         )
       )
@@ -47,31 +50,24 @@ const App = () => {
   }
 
   //Update likes blog function
-  const updateLikes = async (id) => {
-    const blogToUpdate = await blogs.find((blog) => blog.id === id)
-    console.log(blogToUpdate)
+  const updateBlogLikes = (blogToUpdate) => {
     try {
-      const changedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 }
-      const response = await blogService.update(id, changedBlog)
-      console.log(response)
-      setBlogs(blogs.map((blog) => (blog.id === id ? response : blog)))
+      dispatch(updateLikes(blogToUpdate))
     } catch (error) {
       dispatch(errorMessage(`Err something went wrong!`, 5000))
     }
   }
-  //Remove blog
 
-  const removeBlog = async (id) => {
+  //Remove blog
+  const removeBlog = (blogToRemove) => {
     try {
-      const blogToRemove = await blogs.find((blog) => blog.id === id)
       if (
         window.confirm(
           `Delete ${blogToRemove.title} by ${blogToRemove.author}?`
         )
       ) {
-        await blogService.deleteBlog(blogToRemove.id)
+        dispatch(removeABlog(blogToRemove))
         dispatch(successMessage(`Deletion Successful!`, 5000))
-        setBlogs(blogs.filter((blog) => blog.id !== blogToRemove.id))
       }
     } catch (error) {
       dispatch(errorMessage(`Unauthorized user!`, 5000))
@@ -82,8 +78,7 @@ const App = () => {
     try {
       const user = await loginService.login(credentials)
       window.localStorage.setItem("loggedInUser", JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
+      dispatch(loggedInUser())
     } catch (exception) {
       dispatch(errorMessage("Invalid username and/or password!", 5000))
     }
@@ -108,38 +103,37 @@ const App = () => {
   }
 
   //List of blogs to view
-  const blogsList = (blogs) => {
-    return blogs
+  const blogsList = (storedBlogs) => {
+    return storedBlogs
       .sort((a, b) => b.likes - a.likes)
       .map((blog) => (
         <Blog
           key={blog.id}
           blog={blog}
-          updateLikes={() => updateLikes(blog.id)}
-          deleteBlog={() => removeBlog(blog.id)}
-          user={user}
+          updateLikes={() => updateBlogLikes(blog)}
+          deleteBlog={() => removeBlog(blog)}
+          user={userInState}
         />
       ))
   }
 
   //Logout function
   const logout = () => {
-    setUser(null)
-    window.localStorage.clear()
+    dispatch(loggedOutUser())
   }
 
   return (
     <React.Fragment>
       <Notification message={message} messageSuccess={isSuccess} />
 
-      {user === null ? (
+      {userInState === null ? (
         loginForm()
-      ) : user ? (
+      ) : userInState ? (
         <div>
-          <p>{user.name} logged in</p>
+          <p>{userInState.name} logged in</p>
           {blogForm()}
           <h2>Blogs</h2>
-          <div id="bloglist">{blogsList(blogs)}</div>
+          <div id="bloglist">{blogsList(blogsInState)}</div>
           <button
             id="logout"
             onClick={() => logout()}
