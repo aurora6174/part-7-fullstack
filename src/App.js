@@ -11,7 +11,14 @@ import { initializeUsers } from "./reducers/allUsersReducer"
 import { loggedInUser, loggedOutUser } from "./reducers/userReducer"
 import { successMessage, errorMessage } from "./reducers/notificationReducer"
 import { useSelector, useDispatch } from "react-redux"
-
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  useParams,
+  useHistory,
+} from "react-router-dom"
 //App Component
 const App = () => {
   const dispatch = useDispatch()
@@ -20,6 +27,7 @@ const App = () => {
   // const blogsInState = useSelector((state) => state.blogReducer)
   const userInState = useSelector((state) => state.userReducer)
   const allUsers = useSelector((state) => state.allUsersReducer)
+  const history = useHistory()
   //Get all blogs
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -118,11 +126,30 @@ const App = () => {
 
   //Logout function
   const logout = () => {
+    history.push("/")
     dispatch(loggedOutUser())
   }
 
+  const UserBlog = ({ allUsersInState }) => {
+    const id = useParams().id
+    const user = allUsersInState.find((user) => user.id === id)
+
+    if (!user) {
+      return null
+    }
+
+    return (
+      <div>
+        <h2>{user.name}</h2>
+        <h3>Added Blogs</h3>
+        {user.blogs.map((blog) => (
+          <li key={blog.id}>{blog.title}</li>
+        ))}
+      </div>
+    )
+  }
   return (
-    <React.Fragment>
+    <Router>
       <Notification message={message} messageSuccess={isSuccess} />
 
       {userInState === null ? (
@@ -140,12 +167,19 @@ const App = () => {
             Logout
           </button>
           <h2>Users</h2>
-          <Users users={allUsers} />
+          <Switch>
+            <Route path="/:id">
+              <UserBlog allUsersInState={allUsers} />
+            </Route>
+            <Route path="/">
+              <Users users={allUsers} />
+            </Route>
+          </Switch>
         </div>
       ) : (
         loginForm()
       )}
-    </React.Fragment>
+    </Router>
   )
 }
 

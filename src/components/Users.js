@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "react-router-dom"
 const Users = ({ users }) => {
   return (
     <table>
@@ -11,7 +12,9 @@ const Users = ({ users }) => {
       <tbody>
         {users.map((user) => (
           <tr key={user.id}>
-            <td>{user.name}</td>
+            <td>
+              <Link to={`/${user.id}`}>{user.name}</Link>
+            </td>
             <td>{user.blogs.length}</td>
           </tr>
         ))}
