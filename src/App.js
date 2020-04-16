@@ -3,10 +3,11 @@ import React, { useEffect } from "react"
 import loginService from "./services/login"
 import Notification from "./components/Notification"
 import LoginForm from "./components/LoginForm"
-//import BlogForm from "./components/BlogForm"
+import BlogForm from "./components/BlogForm"
 import ToggleTool from "./components/ToggleTool"
 import Users from "./components/Users"
-import { initializeBlogs } from "./reducers/blogReducer"
+import AllBlogs from "./components/AllBlogs"
+import { initializeBlogs, updateLikes, newBlog } from "./reducers/blogReducer"
 import { initializeUsers } from "./reducers/allUsersReducer"
 import { loggedInUser, loggedOutUser } from "./reducers/userReducer"
 import { successMessage, errorMessage } from "./reducers/notificationReducer"
@@ -24,7 +25,7 @@ const App = () => {
   const dispatch = useDispatch()
   const message = useSelector((state) => state.notReducer.message)
   const isSuccess = useSelector((state) => state.notReducer.isSuccess)
-  // const blogsInState = useSelector((state) => state.blogReducer)
+  const blogsInState = useSelector((state) => state.blogReducer)
   const userInState = useSelector((state) => state.userReducer)
   const allUsers = useSelector((state) => state.allUsersReducer)
   const history = useHistory()
@@ -42,28 +43,28 @@ const App = () => {
   }, [dispatch])
 
   //Create blog function
-  // const addBlog = (newBlogObject) => {
-  //   try {
-  //     dispatch(newBlog(newBlogObject))
-  //     dispatch(
-  //       successMessage(
-  //         `A new blog "${newBlogObject.title}" by ${newBlogObject.author} added!`,
-  //         5000
-  //       )
-  //     )
-  //   } catch (error) {
-  //     dispatch(errorMessage(`Err, something went wrong!`, 5000))
-  //   }
-  // }
+  const addBlog = (newBlogObject) => {
+    try {
+      dispatch(newBlog(newBlogObject))
+      dispatch(
+        successMessage(
+          `A new blog "${newBlogObject.title}" by ${newBlogObject.author} added!`,
+          5000
+        )
+      )
+    } catch (error) {
+      dispatch(errorMessage(`Err, something went wrong!`, 5000))
+    }
+  }
 
   //Update likes blog function
-  // const updateBlogLikes = (blogToUpdate) => {
-  //   try {
-  //     dispatch(updateLikes(blogToUpdate))
-  //   } catch (error) {
-  //     dispatch(errorMessage(`Err something went wrong!`, 5000))
-  //   }
-  // }
+  const updateBlogLikes = (blogToUpdate) => {
+    try {
+      dispatch(updateLikes(blogToUpdate))
+    } catch (error) {
+      dispatch(errorMessage(`Err something went wrong!`, 5000))
+    }
+  }
 
   //Remove blog
   // const removeBlog = (blogToRemove) => {
@@ -101,13 +102,13 @@ const App = () => {
   }
 
   //Blog form
-  // const blogForm = () => {
-  //   return (
-  //     <ToggleTool buttonLabel="New Blog">
-  //       <BlogForm createBlog={addBlog} />
-  //     </ToggleTool>
-  //   )
-  // }
+  const blogForm = () => {
+    return (
+      <ToggleTool buttonLabel="New Blog">
+        <BlogForm createBlog={addBlog} />
+      </ToggleTool>
+    )
+  }
 
   //List of blogs to view
   // const blogsList = (storedBlogs) => {
@@ -130,21 +131,47 @@ const App = () => {
     dispatch(loggedOutUser())
   }
 
-  const UserBlog = ({ allUsersInState }) => {
-    const id = useParams().id
-    const user = allUsersInState.find((user) => user.id === id)
+  // const UserBlog = ({ allUsersInState }) => {
+  //   const id = useParams().id
+  //   const user = allUsersInState.find((user) => user.id === id)
 
-    if (!user) {
+  //   if (!user) {
+  //     return null
+  //   }
+
+  //   return (
+  //     <div>
+  //       <h2>{user.name}</h2>
+  //       <h3>Added Blogs</h3>
+  //       {user.blogs.map((blog) => (
+  //         <li key={blog.id}>{blog.title}</li>
+  //       ))}
+  //     </div>
+  //   )
+  // }
+  const SpecificBlog = ({ targetBlog, blogsArray }) => {
+    const id = useParams().id
+    const specBlog = blogsArray.find((blog) => blog.id === id)
+    console.log(specBlog)
+    const creator = targetBlog.filter((blog) =>
+      blog.blogs.some((blog) => blog.title === specBlog.title)
+    )
+    if (!creator) {
       return null
     }
-
+    if (!specBlog) {
+      return null
+    }
     return (
       <div>
-        <h2>{user.name}</h2>
-        <h3>Added Blogs</h3>
-        {user.blogs.map((blog) => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
+        <h1>{specBlog.title}</h1>
+        <p>{specBlog.url}</p>
+
+        <p>
+          Likes: {specBlog.likes}{" "}
+          <button onClick={() => updateBlogLikes(specBlog)}>Like</button>
+        </p>
+        <p>Added by: {creator[0].name}</p>
       </div>
     )
   }
@@ -166,13 +193,15 @@ const App = () => {
           >
             Logout
           </button>
-          <h2>Users</h2>
+          <br />
+          {blogForm()}
+          <h2>Blogs</h2>
           <Switch>
             <Route path="/:id">
-              <UserBlog allUsersInState={allUsers} />
+              <SpecificBlog targetBlog={allUsers} blogsArray={blogsInState} />
             </Route>
             <Route path="/">
-              <Users users={allUsers} />
+              <AllBlogs data={blogsInState} />
             </Route>
           </Switch>
         </div>
