@@ -12,6 +12,7 @@ import { initializeUsers } from "./reducers/allUsersReducer"
 import { loggedInUser, loggedOutUser } from "./reducers/userReducer"
 import { successMessage, errorMessage } from "./reducers/notificationReducer"
 import { useSelector, useDispatch } from "react-redux"
+import { Navigation } from "./component-styles/index"
 import {
   BrowserRouter as Router,
   Route,
@@ -19,6 +20,7 @@ import {
   Switch,
   useParams,
   useHistory,
+  Redirect,
 } from "react-router-dom"
 //App Component
 const App = () => {
@@ -93,12 +95,8 @@ const App = () => {
   }
 
   //Login form
-  const loginForm = () => {
-    return (
-      <ToggleTool buttonLabel="Login">
-        <LoginForm handleLogin={handleLogin} />
-      </ToggleTool>
-    )
+  const LoginFormC = () => {
+    return <LoginForm handleLogin={handleLogin} />
   }
 
   //Blog form
@@ -131,28 +129,29 @@ const App = () => {
     dispatch(loggedOutUser())
   }
 
-  // const UserBlog = ({ allUsersInState }) => {
-  //   const id = useParams().id
-  //   const user = allUsersInState.find((user) => user.id === id)
+  const UserBlog = ({ allUsersInState }) => {
+    const id = useParams().id
+    const user = allUsersInState.find((user) => user.id === id)
 
-  //   if (!user) {
-  //     return null
-  //   }
+    if (!user) {
+      return null
+    }
 
-  //   return (
-  //     <div>
-  //       <h2>{user.name}</h2>
-  //       <h3>Added Blogs</h3>
-  //       {user.blogs.map((blog) => (
-  //         <li key={blog.id}>{blog.title}</li>
-  //       ))}
-  //     </div>
-  //   )
-  // }
+    return (
+      <div>
+        <h2>{user.name}</h2>
+        <h3>Added Blogs</h3>
+        {user.blogs.map((blog) => (
+          <li key={blog.id} style={{ listStyleType: `none` }}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </li>
+        ))}
+      </div>
+    )
+  }
   const SpecificBlog = ({ targetBlog, blogsArray }) => {
     const id = useParams().id
     const specBlog = blogsArray.find((blog) => blog.id === id)
-    console.log(specBlog)
     const creator = targetBlog.filter((blog) =>
       blog.blogs.some((blog) => blog.title === specBlog.title)
     )
@@ -175,44 +174,54 @@ const App = () => {
       </div>
     )
   }
+  const style = { padding: `1em` }
+
   return (
     <Router>
       <Notification message={message} messageSuccess={isSuccess} />
 
-      {userInState === null ? (
-        loginForm()
-      ) : userInState ? (
-        <div>
-          <h2>Blogs</h2>
-          <p>{userInState.name} logged in</p>
-
-          <button
-            id="logout"
-            onClick={() => logout()}
-            style={{ cursor: `pointer` }}
-          >
-            Logout
-          </button>
-          <br />
+      <Navigation>
+        {userInState === null ? (
+          <Link style={style} to="/login">
+            Login
+          </Link>
+        ) : userInState ? (
+          <React.Fragment>
+            <p style={{ margin: 0, padding: 0, display: `inline` }}>
+              {userInState.name} logged in
+            </p>
+            <Link style={style} to="/blogs">
+              Blogs
+            </Link>
+            <Link style={style} to="/users">
+              Users
+            </Link>
+            <Link style={style} to="/logout" onClick={() => logout()}>
+              LogOut
+            </Link>
+          </React.Fragment>
+        ) : null}
+      </Navigation>
+      <Switch>
+        <Route path="/blogs/:id">
+          <SpecificBlog targetBlog={allUsers} blogsArray={blogsInState} />
+        </Route>
+        <Route path="/users/:id">
+          <UserBlog allUsersInState={allUsers} />
+        </Route>
+        <Route path="/users">
+          <Users users={allUsers} />
+        </Route>
+        <Route path="/blogs">
           {blogForm()}
-          <h2>Blogs</h2>
-          <Switch>
-            <Route path="/:id">
-              <SpecificBlog targetBlog={allUsers} blogsArray={blogsInState} />
-            </Route>
-            <Route path="/">
-              <AllBlogs data={blogsInState} />
-            </Route>
-          </Switch>
-        </div>
-      ) : (
-        loginForm()
-      )}
+          <AllBlogs data={blogsInState} />
+        </Route>
+        <Route path="/login">
+          {userInState ? <Redirect to="/blogs" /> : <LoginFormC />}
+        </Route>
+      </Switch>
     </Router>
   )
 }
 
 export default App
-
-//<div id="bloglist">{blogsList(blogsInState)}</div>
-//  {blogForm()}

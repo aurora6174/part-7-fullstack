@@ -1,5 +1,10 @@
 import React, { useState } from "react"
-
+import {
+  LoginButton,
+  Input,
+  Title,
+  FormComponent,
+} from "../component-styles/index"
 const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -16,13 +21,13 @@ const LoginForm = ({ handleLogin }) => {
     setPassword("")
   }
   return (
-    <React.Fragment>
-      <h2>Log in to application</h2>
+    <FormComponent>
+      <Title>Log in to application</Title>
       <form onSubmit={login}>
         <div>
           Username:
           <br />
-          <input
+          <Input
             id="username"
             type="text"
             value={username}
@@ -34,7 +39,7 @@ const LoginForm = ({ handleLogin }) => {
         <div>
           Password:
           <br />
-          <input
+          <Input
             id="password"
             type="password"
             value={password}
@@ -43,11 +48,11 @@ const LoginForm = ({ handleLogin }) => {
           />
         </div>
         <br />
-        <button id="login-button" type="submit" style={{ cursor: `pointer` }}>
+        <LoginButton type="submit" style={{ cursor: `pointer` }}>
           Login
-        </button>
+        </LoginButton>
       </form>
-    </React.Fragment>
+    </FormComponent>
   )
 }
 

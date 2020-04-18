@@ -4,7 +4,7 @@ const AllBlogs = ({ data }) => {
   return data.map((blog) => (
     <div id="related_links" key={blog.id}>
       <li key={blog.id} style={{ listStyleType: `none` }}>
-        <Link to={`/${blog.id}`}>{blog.title}</Link>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
       </li>
     </div>
   ))

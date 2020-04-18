@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-
+import { Input, CreateButton, FormComponent } from "../component-styles/index"
 const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
@@ -20,25 +20,25 @@ const BlogForm = ({ createBlog }) => {
   }
 
   return (
-    <div>
+    <FormComponent>
       <h2>Create a new Blog</h2>
       <form onSubmit={addBlog}>
         Title:{" "}
-        <input id="title" type="text" value={title} onChange={handleTitle} />
+        <Input id="title" type="text" value={title} onChange={handleTitle} />
         <br />
         <br />
         Author:{" "}
-        <input id="author" type="text" value={author} onChange={handleAuthor} />
+        <Input id="author" type="text" value={author} onChange={handleAuthor} />
         <br />
         <br />
-        Url: <input id="url" type="text" value={url} onChange={handleUrl} />
+        Url: <Input id="url" type="text" value={url} onChange={handleUrl} />
         <br />
         <br />
-        <button id="create" type="submit">
+        <CreateButton id="create" type="submit">
           Create
-        </button>
+        </CreateButton>
       </form>
-    </div>
+    </FormComponent>
   )
 }
 

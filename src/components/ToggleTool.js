@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import Button, { CancelButton } from "../component-styles/index"
 const ToggleTool = (props) => {
   const [visible, setVisible] = useState(false)
   const hideComponent = { display: visible ? "none" : "" }
@@ -10,16 +11,14 @@ const ToggleTool = (props) => {
   return (
     <div>
       <div style={hideComponent}>
-        <button onClick={toggleVisiblity} style={{ cursor: `pointer` }}>
+        <Button onClick={toggleVisiblity} style={{ cursor: `pointer` }}>
           {props.buttonLabel}
-        </button>
+        </Button>
       </div>
       <div style={showComponent}>
         {props.children}
         <br />
-        <button id="cancel" onClick={toggleVisiblity}>
-          Cancel
-        </button>
+        <CancelButton onClick={toggleVisiblity}>Cancel</CancelButton>
       </div>
     </div>
   )
