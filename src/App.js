@@ -7,7 +7,13 @@ import BlogForm from "./components/BlogForm"
 import ToggleTool from "./components/ToggleTool"
 import Users from "./components/Users"
 import AllBlogs from "./components/AllBlogs"
-import { initializeBlogs, updateLikes, newBlog } from "./reducers/blogReducer"
+import CommentsForm from "./components/CommentsForm"
+import { initializeBlogs, newBlog } from "./reducers/blogReducer"
+import {
+  commentOnBlog,
+  initializeComments,
+  updateLikes,
+} from "./reducers/commentReducer"
 import { initializeUsers } from "./reducers/allUsersReducer"
 import { loggedInUser, loggedOutUser } from "./reducers/userReducer"
 import { successMessage, errorMessage } from "./reducers/notificationReducer"
@@ -30,10 +36,15 @@ const App = () => {
   const blogsInState = useSelector((state) => state.blogReducer)
   const userInState = useSelector((state) => state.userReducer)
   const allUsers = useSelector((state) => state.allUsersReducer)
+  const comments = useSelector((state) => state.commentReducer)
   const history = useHistory()
   //Get all blogs
   useEffect(() => {
     dispatch(initializeBlogs())
+  }, [dispatch])
+  //Initialize Comments
+  useEffect(() => {
+    dispatch(initializeComments())
   }, [dispatch])
   //Get all users
   useEffect(() => {
@@ -127,6 +138,7 @@ const App = () => {
   const logout = () => {
     history.push("/")
     dispatch(loggedOutUser())
+    dispatch(successMessage(`Logged Out...`, 3000))
   }
 
   const UserBlog = ({ allUsersInState }) => {
@@ -149,6 +161,12 @@ const App = () => {
       </div>
     )
   }
+
+  // add comment
+  const addComment = (blog, comment) => {
+    dispatch(commentOnBlog(blog, comment))
+  }
+
   const SpecificBlog = ({ targetBlog, blogsArray }) => {
     const id = useParams().id
     const specBlog = blogsArray.find((blog) => blog.id === id)
@@ -171,6 +189,12 @@ const App = () => {
           <button onClick={() => updateBlogLikes(specBlog)}>Like</button>
         </p>
         <p>Added by: {creator[0].name}</p>
+        <div>
+          <CommentsForm postComment={addComment} blogToComment={specBlog} />
+        </div>
+        {specBlog.comments.map((comment) => (
+          <li key={comment}>{comment}</li>
+        ))}
       </div>
     )
   }
@@ -204,7 +228,7 @@ const App = () => {
       </Navigation>
       <Switch>
         <Route path="/blogs/:id">
-          <SpecificBlog targetBlog={allUsers} blogsArray={blogsInState} />
+          <SpecificBlog targetBlog={allUsers} blogsArray={comments} />
         </Route>
         <Route path="/users/:id">
           <UserBlog allUsersInState={allUsers} />

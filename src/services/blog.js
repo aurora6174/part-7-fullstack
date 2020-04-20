@@ -1,6 +1,6 @@
 import axios from "axios"
 const baseUrl = "/api/blogs"
-
+//const commentsUrl = "/api/blogs/:id/comments"
 let token = null
 const setToken = (newToken) => {
   token = `bearer ${newToken}`
@@ -8,6 +8,18 @@ const setToken = (newToken) => {
 const getAll = () => {
   const request = axios.get(baseUrl)
   return request.then((response) => response.data)
+}
+
+const postComment = async (targetBlog, comment) => {
+  console.log(targetBlog)
+  const commentedBlog = {
+    ...targetBlog,
+    comments: targetBlog.blogToComment.comments.concat(comment),
+  }
+  const commentsUrl = `${baseUrl}/${targetBlog.blogToComment.id}/comments`
+  const response = await axios.post(commentsUrl, commentedBlog)
+  console.log(response.data)
+  return response.data
 }
 const create = async (newBlog) => {
   const config = { headers: { Authorization: token } }
@@ -26,4 +38,4 @@ const deleteBlog = async (blog) => {
   return response.data
 }
 
-export default { getAll, create, setToken, update, deleteBlog }
+export default { getAll, postComment, create, setToken, update, deleteBlog }

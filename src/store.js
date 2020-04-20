@@ -4,6 +4,7 @@ import notReducer from "./reducers/notificationReducer"
 import blogReducer from "./reducers/blogReducer"
 import userReducer from "./reducers/userReducer"
 import allUsersReducer from "./reducers/allUsersReducer"
+import commentReducer from "./reducers/commentReducer"
 import { composeWithDevTools } from "redux-devtools-extension"
 
 const reducer = combineReducers({
@@ -11,6 +12,7 @@ const reducer = combineReducers({
   blogReducer,
   userReducer,
   allUsersReducer,
+  commentReducer,
 })
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)))
 store.subscribe(() => console.log(store.getState()))
