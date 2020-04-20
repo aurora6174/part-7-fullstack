@@ -51,7 +51,7 @@ th {
   letter-spacing: 2px;
 }
 #related_links {
-  width: 50%;
+  min-width: 50%;
   border-right: 1px solid #000;
   padding: 1em;
   margin-bottom: 1em;

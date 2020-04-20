@@ -154,8 +154,14 @@ const App = () => {
         <h2>{user.name}</h2>
         <h3>Added Blogs</h3>
         {user.blogs.map((blog) => (
-          <li key={blog.id} style={{ listStyleType: `none` }}>
-            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          <li
+            id="related_links"
+            key={blog.id}
+            style={{ listStyleType: `none` }}
+          >
+            <Link style={{ textDecoration: `none` }} to={`/blogs/${blog.id}`}>
+              {blog.title}
+            </Link>
           </li>
         ))}
       </div>
@@ -198,7 +204,7 @@ const App = () => {
       </div>
     )
   }
-  const style = { padding: `1em` }
+  const style = { padding: `1em`, textDecoration: `none` }
 
   return (
     <Router>
@@ -211,7 +217,14 @@ const App = () => {
           </Link>
         ) : userInState ? (
           <React.Fragment>
-            <p style={{ margin: 0, padding: 0, display: `inline` }}>
+            <p
+              style={{
+                marginRight: 0,
+                padding: 0,
+
+                textAlign: `right`,
+              }}
+            >
               {userInState.name} logged in
             </p>
             <Link style={style} to="/blogs">
