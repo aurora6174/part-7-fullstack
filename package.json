@@ -1,0 +1,30 @@
+{
+  "name": "part-4-2020",
+  "version": "1.0.0",
+  "description": "A bloglist application backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
+  },
+  "author": "Joe Martin",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "jest": "^25.1.0",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "bcrypt": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.3",
+    "mongoose-unique-validator": "^2.0.3"
+  }
+}
